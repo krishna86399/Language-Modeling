@@ -163,7 +163,20 @@ Parameters: list of strs ; dict mapping strs to ints ; int
 Returns: list of floats
 '''
 def buildUnigramProbs(unigrams, unigramCounts, totalCount):
-    return
+    probabiltyList=[]
+    count=0
+    for i in range(len(unigrams)):
+        if unigrams[i] in unigramCounts:
+            count=unigramCounts[unigrams[i]]
+            probability=count/totalCount
+            probabiltyList.append(probability) 
+        else:
+            probabiltyList.append(0)
+    # print (probabiltyList)        
+    return probabiltyList
+
+
+    
 
 
 '''
