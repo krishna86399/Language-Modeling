@@ -105,8 +105,15 @@ Parameters: 2D list of strs
 Returns: dict mapping strs to ints
 '''
 def countStartWords(corpus):
-    
-    return
+    unigram={}
+    for lines in corpus:
+        words= lines[0]
+        if words not in unigram:
+            unigram[words] = 1
+        else:
+             unigram[words] += 1      
+
+    return unigram
 
 
 '''
@@ -116,6 +123,7 @@ Parameters: 2D list of strs
 Returns: dict mapping strs to (dicts mapping strs to ints)
 '''
 def countBigrams(corpus):
+    
     return
 
 
