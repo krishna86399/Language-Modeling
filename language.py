@@ -17,7 +17,18 @@ Parameters: str
 Returns: 2D list of strs
 '''
 def loadBook(filename):
-    return
+    f=open(filename,"r")
+    lines = f.read()
+    k=[]
+    for line in lines.split("\n"):
+        if len(line) > 0:
+           word=line.split(" ")
+           k.append(word)
+    print (k)    
+
+    return k
+
+    
 
 
 '''
@@ -27,7 +38,12 @@ Parameters: 2D list of strs
 Returns: int
 '''
 def getCorpusLength(corpus):
-    return
+    count=0
+    for line in corpus:
+        for word in line:
+            count=count+1
+
+    return count
 
 
 '''
@@ -37,7 +53,13 @@ Parameters: 2D list of strs
 Returns: list of strs
 '''
 def buildVocabulary(corpus):
-    return
+    unigram=[]
+    for lines in corpus:
+        for words in lines:
+         if words not in unigram:
+            unigram.append(words)   
+
+    return unigram
 
 
 '''
@@ -47,7 +69,17 @@ Parameters: 2D list of strs
 Returns: dict mapping strs to ints
 '''
 def countUnigrams(corpus):
-    return
+    unigram={}
+    for lines in corpus:
+       for word in lines:
+           if word not in unigram:
+             unigram[word]=1
+           else:
+             unigram[word] += 1       
+
+    return unigram
+
+    
 
 
 '''
@@ -57,7 +89,13 @@ Parameters: 2D list of strs
 Returns: list of strs
 '''
 def getStartWords(corpus):
-    return
+    unigram=[]
+    for lines in corpus:
+        words= lines[0]
+        if words not in unigram:
+            unigram.append(words)   
+
+    return unigram
 
 
 '''
@@ -67,7 +105,15 @@ Parameters: 2D list of strs
 Returns: dict mapping strs to ints
 '''
 def countStartWords(corpus):
-    return
+    unigram={}
+    for lines in corpus:
+        words= lines[0]
+        if words not in unigram:
+            unigram[words] = 1
+        else:
+             unigram[words] += 1      
+
+    return unigram
 
 
 '''
@@ -77,7 +123,21 @@ Parameters: 2D list of strs
 Returns: dict mapping strs to (dicts mapping strs to ints)
 '''
 def countBigrams(corpus):
-    return
+    bigramDict={}
+    for line in corpus:
+        for i in range(len(line)-1):
+            firstWord = line[i]
+            secondWord = line[i+1]
+            if firstWord not in bigramDict:
+                bigramDict[firstWord]={}
+            if secondWord not in bigramDict[firstWord]:
+                bigramDict[firstWord][secondWord]=1
+            else:
+                bigramDict[firstWord][secondWord]+=1    
+    return bigramDict
+
+    
+   
 
 
 ### WEEK 2 ###
@@ -89,7 +149,11 @@ Parameters: list of strs
 Returns: list of floats
 '''
 def buildUniformProbs(unigrams):
-    return
+    probabilties=[1/len(unigrams)]*len(unigrams)
+    return probabilties
+
+
+
 
 
 '''
@@ -99,7 +163,20 @@ Parameters: list of strs ; dict mapping strs to ints ; int
 Returns: list of floats
 '''
 def buildUnigramProbs(unigrams, unigramCounts, totalCount):
-    return
+    probabiltyList=[]
+    count=0
+    for i in range(len(unigrams)):
+        if unigrams[i] in unigramCounts:
+            count=unigramCounts[unigrams[i]]
+            probability=count/totalCount
+            probabiltyList.append(probability) 
+        else:
+            probabiltyList.append(0)
+    # print (probabiltyList)        
+    return probabiltyList
+
+
+    
 
 
 '''
@@ -109,7 +186,22 @@ Parameters: dict mapping strs to ints ; dict mapping strs to (dicts mapping strs
 Returns: dict mapping strs to (dicts mapping strs to (lists of values))
 '''
 def buildBigramProbs(unigramCounts, bigramCounts):
-    return
+    resultDict={}
+    for prevWord in bigramCounts.keys():
+        wordList=[]
+        probList=[]
+        temp={}
+        for key,value in bigramCounts[prevWord].items():
+            wordList.append(key)
+            prob=value/unigramCounts[prevWord]
+            probList.append(prob)
+            temp["words"]=wordList
+            temp["probs"]=probList
+        resultDict[prevWord]=temp
+    return resultDict
+
+
+   
 
 
 '''
@@ -119,7 +211,15 @@ Parameters: int ; list of strs ; list of floats ; list of strs
 Returns: dict mapping strs to floats
 '''
 def getTopWords(count, words, probs, ignoreList):
-    return
+    wordProb={}
+    for i in range(len(words)):
+        if words[i] not in ignoreList:
+            wordProb[words[i]]=probs[i]
+    Topwords = dict(sorted(wordProb.items(), key = lambda x: x[1], reverse = True)[:count])
+
+    return Topwords
+
+    
 
 
 '''
@@ -130,7 +230,11 @@ Returns: str
 '''
 from random import choices
 def generateTextFromUnigrams(count, words, probs):
-    return
+    sentence=""
+    for i in range(count):
+        wordList=choices(words, weights=probs)
+        sentence=sentence+" "+wordList[0]
+    return sentence
 
 
 '''
@@ -140,7 +244,20 @@ Parameters: int ; list of strs ; list of floats ; dict mapping strs to (dicts ma
 Returns: str
 '''
 def generateTextFromBigrams(count, startWords, startWordProbs, bigramProbs):
-    return
+    sentence=""
+    prevWord=""
+    for i in range(count):
+        if sentence=="" or prevWord==".":
+            word=choices(startWords, weights=startWordProbs)
+            sentence=sentence+" "+word[0]
+            prevWord=word[0]
+        else:
+            word=choices(bigramProbs[prevWord]["words"], weights=bigramProbs[prevWord]["probs"])
+            sentence=sentence+" "+word[0]
+            prevWord=word[0]
+    return sentence
+
+   
 
 
 ### WEEK 3 ###
@@ -285,18 +402,18 @@ def scatterPlot(xs, ys, labels, title):
 
 # This code runs the test cases to check your work
 if __name__ == "__main__":
-    print("\n" + "#"*15 + " WEEK 1 TESTS " +  "#" * 16 + "\n")
-    test.week1Tests()
-    print("\n" + "#"*15 + " WEEK 1 OUTPUT " + "#" * 15 + "\n")
-    test.runWeek1()
+    # print("\n" + "#"*15 + " WEEK 1 TESTS " +  "#" * 16 + "\n")
+    # test.week1Tests()
+    # print("\n" + "#"*15 + " WEEK 1 OUTPUT " + "#" * 15 + "\n")
+    # test.runWeek1()
 
     ## Uncomment these for Week 2 ##
-"""
+
     print("\n" + "#"*15 + " WEEK 2 TESTS " +  "#" * 16 + "\n")
     test.week2Tests()
     print("\n" + "#"*15 + " WEEK 2 OUTPUT " + "#" * 15 + "\n")
     test.runWeek2()
-"""
+
 
     ## Uncomment these for Week 3 ##
 """
